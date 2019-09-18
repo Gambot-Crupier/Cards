@@ -1,6 +1,8 @@
-from os.path import join, dirname, realpath
 from flask import Blueprint, jsonify, request
+from os.path import join, dirname, realpath
 from requests.exceptions import HTTPError
+from project.api.models import Hand, Card
+from project import db
 import json, sys
 
 
@@ -13,38 +15,40 @@ def get_fake_hand():
     UPLOADS_PATH = join(dirname(realpath(__file__)), 'fake_data/hands.json')
 
     with open(UPLOADS_PATH, 'r') as f:
-        distros_dict = json.load(f)
+        hands_json = json.load(f)
 
-    for distro in distros_dict:
-        print(distro['player_id'], file=sys.stderr)
-
-    save_hands()
+    save_hands(hands_json)
 
     return jsonify({
         'hand': [
-            { 'value': 'A', 'suit': 'diamond' },
-            { 'value': '2', 'suit': 'club' },
-            { 'value': '3', 'suit': 'heart' },
-            { 'value': '4', 'suit': 'spade' },
+            { 'Sucess': 'full' }
         ] 
     })
-
 
 
 @hands_blueprint.route("/post_hands", methods=["POST"])
 def post_hands():
     try:
-        data = request.get_json()
-        print(data, file=sys.stderr)
-
+        hands_json = request.get_json()
+        print(hands_json, file=sys.stderr)
+    
+        save_hands(hands_json)
+    
     except HTTPError:
         return jsonify({"message": "NOT FOUND", "status_code": 404}), 404
     else:
         return jsonify({"message": "Hands Recived", "status_code": 200}), 200
 
 
+def save_hands(hands_json):
+    for hand in hands_json:
+        player_id = hand['player_id']
+        db.session.add(Hand(player_id=player_id))
+        
+        cards = hand['cards']
+        for card in cards:
+            value = card['value']
+            suit = card['suit']
+            db.session.add(Card(player_id=player_id, value=value, suit=suit))
 
-
-
-def save_hands():
-    return
+        db.session.commit()
