@@ -1,0 +1,29 @@
+[
+    {
+        "player_id": 1, 
+        "cards": [
+            { "value": "A", "suit": "diamond" },
+            { "value": 2, "suit": "club" },
+            { "value": 3, "suit": "heart" },
+            { "value": 4, "suit": "spade" }
+        ]
+    },
+    {
+        "player_id": 2, 
+        "cards": [
+            { "value": 5, "suit": "diamond" },
+            { "value": 6, "suit": "club" },
+            { "value": 7, "suit": "heart" },
+            { "value": 8, "suit": "spade" }
+        ]
+    },
+    {
+        "player_id": 3, 
+        "cards": [
+            { "value": 9, "suit": "diamond" },
+            { "value": 10, "suit": "club" },
+            { "value": "J", "suit": "heart" },
+            { "value": "Q", "suit": "spade" }
+        ]
+    }
+]
