@@ -6,7 +6,7 @@ from project import db
 import json, sys
 
 
-hands_blueprint = Blueprint('cards', __name__)
+hands_blueprint = Blueprint('card', __name__)
 
 
 @hands_blueprint.route('/get_fake_hands', methods=['GET'])
@@ -52,3 +52,4 @@ def save_hands(hands_json):
             db.session.add(Card(player_id=player_id, value=value, suit=suit))
 
         db.session.commit()
+    
