@@ -1,6 +1,5 @@
 from sqlalchemy.sql import func
 from project import db
-import json
 
 ## Uma carta pode estra em varias mãos, nisso o que determina que uma mesma carta
 ## não caia para mais de 1 pessoa é o round

@@ -3,8 +3,8 @@ from os.path import join, dirname, realpath
 from requests.exceptions import HTTPError
 from project.api.models import Hand, Card
 from project import db
-import json, sys
-
+import json
+import sys
 
 hands_blueprint = Blueprint('card', __name__)
 
@@ -52,30 +52,50 @@ def get_hands():
         for player_id in list(player_ids_set):
             player_hands = Hand.query.filter_by(round_id = round_id, player_id=player_id).all()
 
-            hand = {
+            response_hand = {
                 "player_id": player_id,
                 "cards": []
             }
 
             for hand in player_hands:
                 card = Card.query.filter_by(id=hand.card_id).first()
-                
-                hand['cards'].append({
+
+                response_hand['cards'].append({
                     "value": card.value,
                     "suit": card.suit
                 })
 
-            response['hands'].append(hand)
+            response['hands'].append(response_hand)
 
-        print(response, file=sys.stderr)
-
-
+        return json.dumps(response), 200
         
-    
+    except:
+        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
 
-        # db.session.commit()
-    
-    except HTTPError:
-        return jsonify({"message": "NOT FOUND", "status_code": 404}), 404
-    else:
-        return jsonify({"message": "hands", "status_code": 200}), 200
+
+
+@hands_blueprint.route("/get_player_hand", methods=["GET"])
+def get_player_hand():
+    try:
+        round_id = request.args.get('round_id')
+        player_id = request.args.get('round_id')
+        hands = Hand.query.filter_by(round_id = round_id, player_id=player_id).all()
+
+        response = {
+            "round_id": round_id,
+            "player_id": player_id, 
+            "cards": [],
+        }
+
+        for hand in hands:
+            card = Card.query.filter_by(id=hand.card_id).first()
+
+            response['cards'].append({
+                "value": card.value,
+                "suit": card.suit
+            })
+
+        return json.dumps(response), 200
+        
+    except:
+        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
