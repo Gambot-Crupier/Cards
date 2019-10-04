@@ -13,7 +13,7 @@ Com o Docker e Docker-Compose instalados, basta apenas utilizar os comandos:
 
 Acesse o servidor local no endereço apresentado abaixo:
 
-http://localhost:5001/
+http://localhost:5003/
 
 
 Agora você já pode começar a contribuir!
