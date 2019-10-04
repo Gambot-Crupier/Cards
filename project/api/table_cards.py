@@ -9,7 +9,30 @@ import json, sys
 table_cards_blueprint = Blueprint('table_cards', __name__)
 
 
+@table_cards_blueprint.route('/get_table_cards', methods=['GET'])
+def get_table_cards():
+    try:
+        round_id = request.args.get('round_id')
+        table_cards = RoundCards.query.filter_by(round_id = round_id).all()
+        
+        response = {
+            "round_id": round_id,
+            "cards": [],
+        }  
+        for cards in table_cards:
+                card = Card.query.filter_by(id=cards.card_id).first()
+                
+                response['cards'].append({
+                    "value": card.value,
+                    "suit": card.suit
+                })
+
+        return json.dumps(response), 200
+        
+    except:
+        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
   
+
 @table_cards_blueprint.route("/post_table_cards", methods=["POST"])
 def post_table_cards():
     try:
@@ -21,7 +44,8 @@ def post_table_cards():
         return jsonify({"message": "NOT FOUND", "status_code": 404}), 404
     else:
         return jsonify({"message": "Table Cards Recived", "status_code": 200}), 200
-     
+
+    
 def save_table_cards(table_cards_json):
     for card in table_cards_json:
         round_id = card['round_id']
