@@ -21,7 +21,9 @@ def create_app(script_info=None):
 
     # register blueprints
     from project.api.hands import hands_blueprint
+    from project.api.table_cards import table_cards_blueprint
     app.register_blueprint(hands_blueprint)
+    app.register_blueprint(table_cards_blueprint)
 
     # shell context for flask cli
     @app.shell_context_processor
