@@ -12,7 +12,7 @@ hands_blueprint = Blueprint('card', __name__)
 @hands_blueprint.route("/post_hands", methods=["POST"])
 def post_hands():
     try:
-        hands_json = request.get_json()
+        hands_json = json.loads(request.get_json())
     
         for hand in hands_json:
             player_id = hand['player_id']
@@ -29,9 +29,9 @@ def post_hands():
         db.session.commit()
     
     except HTTPError:
-        return jsonify({"message": "NOT FOUND", "status_code": 404}), 404
+        return jsonify({"message": "NOT FOUND"}), 404
     else:
-        return jsonify({"message": "Hands Recived", "status_code": 200}), 200
+        return jsonify({"message": "Hands Recived"}), 200
 
 
 @hands_blueprint.route("/get_hands", methods=["GET"])
@@ -98,4 +98,4 @@ def get_player_hand():
         return json.dumps(response), 200
         
     except:
-        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
+        return jsonify({"message": "Error on retriving player round hand", "status_code": 404}), 404

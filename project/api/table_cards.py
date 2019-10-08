@@ -30,27 +30,18 @@ def get_table_cards():
         return json.dumps(response), 200
         
     except:
-        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
+        return jsonify({"message": "Error on retriving round hands"}), 404
   
+
+
 
 @table_cards_blueprint.route("/post_table_cards", methods=["POST"])
 def post_table_cards():
     try:
-        table_cards_json = request.get_json()
-        
-        save_table_cards(table_cards_json)
-    
-    except HTTPError:
-        return jsonify({"message": "NOT FOUND", "status_code": 404}), 404
-    else:
-        return jsonify({"message": "Table Cards Recived", "status_code": 200}), 200
+        table_cards_json = json.loads(request.get_json())
 
-    
-def save_table_cards(table_cards_json):
-    for card in table_cards_json:
-        round_id = card['round_id']
-        
-        cards = card['cards']  
+        round_id = table_cards_json['round_id']
+        cards = table_cards_json['cards']  
         
         for table_card in cards:
             value = table_card['value']
@@ -59,7 +50,10 @@ def save_table_cards(table_cards_json):
             card = Card.query.filter_by(value=value, suit=suit).first()
 
             db.session.add(RoundCards(round_id=round_id, card_id=card.id))
-            
-    db.session.commit()
-        
+                
+        db.session.commit()
     
+    except HTTPError:
+        return jsonify({"message": "NOT FOUND"}), 404
+    else:
+        return jsonify({"message": "Table Cards Recived"}), 200
