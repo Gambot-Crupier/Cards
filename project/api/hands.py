@@ -30,6 +30,8 @@ def post_hands():
     
     except HTTPError:
         return jsonify({"message": "NOT FOUND"}), 404
+    except:
+        return jsonify({"message": "Internal Server Error"}), 500
     else:
         return jsonify({"message": "Hands Recived"}), 200
 
@@ -78,7 +80,7 @@ def get_hands():
 def get_player_hand():
     try:
         round_id = request.args.get('round_id')
-        player_id = request.args.get('round_id')
+        player_id = request.args.get('player_id')
         hands = Hand.query.filter_by(round_id = round_id, player_id=player_id).all()
 
         response = {
