@@ -12,7 +12,7 @@ hands_blueprint = Blueprint('card', __name__)
 @hands_blueprint.route("/post_hands", methods=["POST"])
 def post_hands():
     try:
-        hands_json = json.loads(request.get_json())
+        hands_json = request.get_json()
     
         for hand in hands_json:
             player_id = hand['player_id']
@@ -27,13 +27,11 @@ def post_hands():
                 db.session.add(Hand(player_id=player_id, card_id=card.id, round_id=round_id))
 
         db.session.commit()
-    
-    except HTTPError:
-        return jsonify({"message": "NOT FOUND"}), 404
-    except:
-        return jsonify({"message": "Internal Server Error"}), 500
-    else:
-        return jsonify({"message": "Hands Recived"}), 200
+        return jsonify({"message": "Mãos Recebidas."}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Erro ao tentar receber as mãos.", "error": str(e)}), 500
+        
 
 
 @hands_blueprint.route("/get_hands", methods=["GET"])
@@ -71,8 +69,8 @@ def get_hands():
 
         return json.dumps(response), 200
         
-    except:
-        return jsonify({"message": "Error on retriving round hands", "status_code": 404}), 404
+    except Exception as e:
+        return jsonify({"message": "Erro ao tentar recuperar as mãos dos usuários.", "error": str(e)}), 500
 
 
 
@@ -99,5 +97,5 @@ def get_player_hand():
 
         return json.dumps(response), 200
         
-    except:
-        return jsonify({"message": "Error on retriving player round hand", "status_code": 404}), 404
+    except Exception as e:
+        return jsonify({"message": "Erro ao tentar recuperar a mão dos usuário.", "error": str(e) }), 500

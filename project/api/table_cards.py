@@ -38,7 +38,7 @@ def get_table_cards():
 @table_cards_blueprint.route("/post_table_cards", methods=["POST"])
 def post_table_cards():
     try:
-        table_cards_json = json.loads(request.get_json())
+        table_cards_json = request.get_json()
 
         round_id = table_cards_json['round_id']
         cards = table_cards_json['cards']  
@@ -52,8 +52,9 @@ def post_table_cards():
             db.session.add(RoundCards(round_id=round_id, card_id=card.id))
                 
         db.session.commit()
-    
-    except HTTPError:
-        return jsonify({"message": "NOT FOUND"}), 404
-    else:
+
         return jsonify({"message": "Table Cards Recived"}), 200
+    
+    except Exception as e:
+        return jsonify({ "error": str(e), "message": "Erro ao receber as cartas!" }), 500
+        
