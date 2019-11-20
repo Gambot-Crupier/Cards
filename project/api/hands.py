@@ -5,6 +5,8 @@ from project.api.models import Hand, Card
 from project import db
 import json
 import sys
+from treys import Evaluator, Card
+from project.api.modules.cards import get_player_hand
 
 hands_blueprint = Blueprint('card', __name__)
 
@@ -99,3 +101,22 @@ def get_player_hand():
         
     except Exception as e:
         return jsonify({"message": "Erro ao tentar recuperar a mão dos usuário.", "error": str(e) }), 500
+
+@hands_blueprint.route("/get_winner", methods=["POST"])
+def get_winner():
+    parameters = request.get_json()
+    player_list = parameters['players']
+    round_id = parameters['round_id']
+    evaluator = Evaluator()
+
+    if player_list is not None:
+        round_cards = get_round_cards(round_id)
+        player_hands = get_player_hand(player_list, round_id)
+
+        evaluator.hand_summary(round_cards, player_hands)            
+                
+
+    else:
+        return jsonify({
+            "message": "Não conseguiu pegar o vencedor"
+        }),400
