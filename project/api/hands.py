@@ -110,11 +110,19 @@ def get_winner():
     evaluator = Evaluator()
 
     if player_list is not None:
-        round_cards = get_round_cards(round_id)
-        player_hands = get_player_hand(player_list, round_id)
-
-        evaluator.hand_summary(round_cards, player_hands)            
-                
+        try:
+            round_cards = get_round_cards(round_id)
+            player_hands = get_player_hand(player_list, round_id)
+            hands_score = get_hands_score(player_hands, round_cards)
+            winner = get_winner(hands_score)
+            
+            return jsonify({
+                player_id: winner['player_id']
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'message': str(e)
+            }), 400
 
     else:
         return jsonify({
