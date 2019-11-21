@@ -34,7 +34,7 @@ def get_hands_score(player_hands, round_cards):
         hand_score = evaluator.evaluate(round_cards, player_hand['cards'])
         player_score = {
             'score': hand_score,
-            'player_id': player_hand.['player_id']
+            'player_id': player_hand['player_id']
         }
         hands_scores.append(player_score)
 

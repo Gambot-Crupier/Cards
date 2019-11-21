@@ -123,7 +123,6 @@ def get_winner():
             return jsonify({
                 'message': str(e)
             }), 400
-
     else:
         return jsonify({
             "message": "Não conseguiu pegar o vencedor"
