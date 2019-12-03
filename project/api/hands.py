@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request
 from os.path import join, dirname, realpath
 from requests.exceptions import HTTPError
-from project.api.models import Hand, Card
+from project.api.models import Hand, Card, RoundCards
 from project import db
 import json
 import sys
-from treys import Evaluator, Card
-from project.api.modules.cards import get_player_hand
+from treys import Evaluator, Card as EvaluatorCards
+from project.api.modules.cards import get_player_hands, get_round_cards, get_round_winner, get_hands_score
 
 hands_blueprint = Blueprint('card', __name__)
 
@@ -15,14 +15,16 @@ hands_blueprint = Blueprint('card', __name__)
 def post_hands():
     try:
         hands_json = request.get_json()
+        hands = hands_json['hands']
     
-        for hand in hands_json:
+        for hand in hands:
             player_id = hand['player_id']
             round_id = hand['round_id']
             cards = hand['cards']
             
             for card in cards:
                 value = card['value']
+
                 suit = card['suit']
 
                 card = Card.query.filter_by(value=value, suit=suit).first()
@@ -31,7 +33,7 @@ def post_hands():
         db.session.commit()
         return jsonify({"message": "Mãos Recebidas."}), 200
 
-    except Exception as e:
+    except Exception as e:        
         return jsonify({"message": "Erro ao tentar receber as mãos.", "error": str(e)}), 500
         
 
@@ -102,22 +104,44 @@ def get_player_hand():
     except Exception as e:
         return jsonify({"message": "Erro ao tentar recuperar a mão dos usuário.", "error": str(e) }), 500
 
+@hands_blueprint.route("/get_round_cards_number", methods=["GET"])
+def get_round_cards_number():
+    try:
+        round_id = request.args.get('round_id')
+
+        round_cards = RoundCards.query.filter_by(round_id = round_id).all()
+        
+        if round_cards is not None:
+            number_of_cards = len(round_cards)
+        else:
+            number_of_cards = 0
+
+        return jsonify({
+            'number': number_of_cards
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'message': str(e)
+        }), 400
+
 @hands_blueprint.route("/get_winner", methods=["POST"])
 def get_winner():
     parameters = request.get_json()
     player_list = parameters['players']
     round_id = parameters['round_id']
+
     evaluator = Evaluator()
+
 
     if player_list is not None:
         try:
             round_cards = get_round_cards(round_id)
-            player_hands = get_player_hand(player_list, round_id)
-            hands_score = get_hands_score(player_hands, round_cards)
-            winner = get_winner(hands_score)
-            
+            player_hands = get_player_hands(player_list, round_id)            
+            player_hands_score = get_hands_score(player_hands, round_cards)
+            winner = get_round_winner(player_hands_score)
+         
             return jsonify({
-                player_id: winner['player_id']
+                'player_id': winner['player_id']
             }), 200
         except Exception as e:
             return jsonify({
