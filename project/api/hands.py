@@ -14,8 +14,9 @@ hands_blueprint = Blueprint('card', __name__)
 @hands_blueprint.route("/post_hands", methods=["POST"])
 def post_hands():
     try:
-        hands_json = request.get_json()
-        hands = hands_json['hands']
+        hands = request.get_json()
+        # hands = hands_json['cards']
+
     
         for hand in hands:
             player_id = hand['player_id']
@@ -23,11 +24,16 @@ def post_hands():
             cards = hand['cards']
             
             for card in cards:
+                # print('\n\naaaaaa', file=sys.stderr)
                 value = card['value']
-
                 suit = card['suit']
 
+                # print(value, file=sys.stderr)
+                # print(suit, file=sys.stderr)
+                
                 card = Card.query.filter_by(value=value, suit=suit).first()
+                print(card, file=sys.stderr)
+                
                 db.session.add(Hand(player_id=player_id, card_id=card.id, round_id=round_id))
 
         db.session.commit()
