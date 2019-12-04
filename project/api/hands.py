@@ -7,6 +7,7 @@ import json
 import sys
 from treys import Evaluator, Card as EvaluatorCards
 from project.api.modules.cards import get_player_hands, get_round_cards, get_round_winner, get_hands_score
+import requests
 
 hands_blueprint = Blueprint('card', __name__)
 
@@ -37,7 +38,23 @@ def post_hands():
                 db.session.add(Hand(player_id=player_id, card_id=card.id, round_id=round_id))
 
         db.session.commit()
-        return jsonify({"message": "Mãos Recebidas."}), 200
+
+
+
+        # Depois de mandar as mãos, deve-se começar o round!
+        url = 'https://6wiv4418b6.execute-api.sa-east-1.amazonaws.com/production/start_round'
+
+        try:
+            start_round_request = requests.request("POST", url)
+
+            if start_round_request.status_code is 200:
+                return jsonify({ 'message': 'Mãos postadas e round começado!' })
+            else:
+                return jsonify({ 'message': 'Erro ao tentar começar round após postas as mãos.' }), 500
+
+        except Exception as e:
+            return jsonify({"error": "Erro ao tentar iniciar o round quando posta as mãos.", "message": str(e)}), 502
+
 
     except Exception as e:        
         return jsonify({"message": "Erro ao tentar receber as mãos.", "error": str(e)}), 500
