@@ -39,8 +39,11 @@ def get_table_cards():
 def post_table_cards():
     try:
         table_cards_json = request.get_json()
+        print(table_cards_json, file= sys.stderr)
         round_id = table_cards_json['round_id']
+        print(round_id, file= sys.stderr)
         cards = table_cards_json['cards']
+        print(cards, file= sys.stderr)
 
         for table_card in cards:
             value = table_card['value']
