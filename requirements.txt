@@ -2,5 +2,5 @@ Flask==1.0.2
 Flask-SQLAlchemy==2.3.2
 psycopg2==2.7.4
 gunicorn
-requests==2.21.0
+requests==2.31.0
 treys==0.1.3
